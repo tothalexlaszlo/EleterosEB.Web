@@ -1,0 +1,92 @@
+﻿@{
+}
+<h2>Product Categories</h2>
+<div id="grid"></div>
+<script>
+    $(function () {
+        var serviceUrl = "/api/categories";
+        var dataSource = new kendo.data.DataSource({
+            //type: "json",
+            transport: {
+                read: {
+                    url: serviceUrl,
+                    contentType: "application/json"
+                },
+                update: {
+                    url: function (category) { return serviceUrl + "/" + category.categoryId },
+                    type: "PUT",
+                    contentType: "application/json"
+                },
+                destroy: {
+                    url: function (category) { return serviceUrl + "/" + category.categoryId},
+                    type: "DELETE",
+                    contentType: "application/json"
+                },
+                create: {
+                    url: serviceUrl,
+                    type: "POST",
+                    contentType: "application/json"
+                },
+                parameterMap: function (options, operation) {
+                    return JSON.stringify(options);
+                }
+            },
+            pageSize: 15,
+            schema: {
+                model: {
+                    id: "categoryId",
+                    fields: {
+                        categoryId: { type: "number", editable: false },
+                        categoryName: { editable: true },
+                        description: { editable: true },
+                    }
+                }
+            }
+        });
+
+
+        $("#grid").kendoGrid({
+            dataSource: dataSource,
+            editable: "inline",
+            toolbar: ["create"],
+            columns: [
+                //{
+                //    field: "roomId",
+                //    filterable: false,
+                //    editable: false,
+                //    width: 50,
+                //},
+                {
+                    field: "categoryName",
+                    title: "Name",
+                    filterable: false
+                },
+                {
+                    field: "description",
+                    title: "Description",
+                    filterable: false
+                },
+                {
+                    command: ["edit", "destroy"], title: "&nbsp;", width: "210px"
+                }
+            ],
+            pageable: true
+        });
+
+
+    });
+    //var clientDropDownEditor = $("#products").kendoDropDownList({
+    //    dataTextField: "fullName",
+    //    dataValueField: "clientId",
+    //    dataSource: {
+    //        transport: {
+    //            read: {
+    //                dataType: "json",
+    //                url: "http://localhost:8888/api/clients",
+    //            }
+    //        }
+    //    },
+    //    filter: "contains"
+    //});
+</script>
+

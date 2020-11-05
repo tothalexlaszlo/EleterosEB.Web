@@ -1,0 +1,79 @@
+﻿@{
+}
+<h2>Appointment Types</h2>
+<div id="grid"></div>
+<script>
+    $(function () {
+        var serviceUrl = "/api/appointmenttypes";
+        var dataSource = new kendo.data.DataSource({
+            type: "json",
+            transport: {
+                read: {
+                    url: serviceUrl,
+                    contentType: "application/json"
+                },
+                update: {
+                    url: function (appointmentType) { return serviceUrl + "/" + appointmentType.appointmentTypeId },
+                    type: "PUT",
+                    contentType: "application/json"
+                },
+                destroy: {
+                    url: function (appointmentType) { return serviceUrl + "/" + appointmentType.appointmentTypeId},
+                    type: "DELETE",
+                    contentType: "application/json"
+                },
+                create: {
+                    url: serviceUrl,
+                    type: "POST",
+                    contentType: "application/json"
+                },
+                parameterMap: function (options, operation) {
+                    return JSON.stringify(options);
+                }
+            },
+            pageSize: 10,
+            schema: {
+                model: {
+                    id: "appointmentTypeId",
+                    fields: {
+                        appointmentTypeId: { type: "number", editable: false },
+                        name: { editable: true },
+                        code: { editable: true },
+                        duration: { type: "number", editable: true }
+                    }
+                }
+            }
+        });
+
+
+        $("#grid").kendoGrid({
+            dataSource: dataSource,
+            editable: "inline",
+            toolbar: ["create"],
+            columns: [
+                {
+                    field: "name",
+                    title: "Name",
+                    filterable: false
+                },
+                {
+                    field: "code",
+                    title: "Code",
+                    filterable: false
+                },
+                {
+                    field: "duration",
+                    title: "Duration",
+                    filterable: false
+                },
+                {
+                    command: ["edit", "destroy"], title: "&nbsp;", width: "210px"
+                }
+            ],
+            pageable: true
+        });
+
+
+    });
+</script>
+

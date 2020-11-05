@@ -1,0 +1,78 @@
+﻿@{
+}
+<h2>Clients</h2>
+<div id="grid"></div>
+<script>
+    $(function () {
+        var serviceUrl = "/api/clients";
+        var dataSource = new kendo.data.DataSource({
+            type: "json",
+            transport: {
+                read: {
+                    url: serviceUrl,
+                    contentType: "application/json"
+                },
+                update: {
+                    url: function (client) { return serviceUrl + "/" + client.clientId },
+                    type: "PUT",
+                    contentType: "application/json"
+                },
+                destroy: {
+                    url: function (client) { return serviceUrl + "/" + client.clientId },
+                    type: "DELETE",
+                    contentType: "application/json"
+                },
+                create: {
+                    url: serviceUrl,
+                    type: "POST",
+                    contentType: "application/json"
+                },
+                parameterMap: function (options, operation) {
+                    return JSON.stringify(options);
+                }
+            },
+            pageSize: 10,
+            schema: {
+                model: {
+                    id: "clientId",
+                    fields: {
+                        clientId: { type: "number", editable: false },
+                        name: { editable: true }
+                    }
+                }
+            }
+        });
+        $("#grid").kendoGrid({
+            dataSource: dataSource,
+            editable: "inline",
+            toolbar: ["create"],
+            columns: [
+                {
+                    field: "clientId",
+                    filterable: false,
+                    editable: false,
+                    width: 50,
+                },
+                {
+                    field: "fullName",
+                    title: "Name",
+                    filterable: false
+                },
+                {
+                    field: "phoneNumber",
+                    title: "Phone",
+                    filterable: false
+                },
+                {
+                    field: "emailAddress",
+                    title: "Email",
+                    filterable: false
+                },
+                {
+                    command: ["edit", "destroy"], title: "&nbsp;", width: "210px"
+                }
+            ],
+            pageable: true
+        });
+    });
+</script>

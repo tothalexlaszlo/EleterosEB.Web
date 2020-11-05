@@ -1,0 +1,109 @@
+﻿<div id="body">
+    <h2>Appointments</h2>
+    <div id="scheduler"></div>
+</div>
+
+<script>
+    var roomServiceUrl = "/api/rooms";
+    var roomDataSource = new kendo.data.DataSource({
+        type: "json",
+        transport: {
+            read: {
+                url: roomServiceUrl,
+                contentType: "application/json"
+            }
+        },
+        schema: {
+            model: {
+                id: "roomId",
+                fields: {
+                    roomId: { type: "number", editable: false },
+                    name: {}
+                }
+            }
+        }
+    });
+
+    var surgeryRoomAppointmentsServiceUrl = "/api/surgeryroomappointments";
+    var surgeryRoomAppointmentsDataSource = new kendo.data.SchedulerDataSource({
+        type: "json",
+        transport: {
+            read: {
+                url: surgeryRoomAppointmentsServiceUrl,
+                contentType: "application/json"
+            },
+            update: {
+                url: function(appt) { return surgeryRoomAppointmentsServiceUrl + "/" + appt.surgeryRoomAppointmentId },
+                type: "PUT",
+                contentType: "application/json"
+            },
+            create: {
+                url: surgeryRoomAppointmentsServiceUrl,
+                type: "POST",
+                contentType: "application/json"
+            },
+            destroy: {
+                url: function(appt) { return surgeryRoomAppointmentsServiceUrl + "/" + appt.surgeryRoomAppointmentId },
+                type: "DELETE",
+                contentType: "application/json"
+            },
+            parameterMap: function(options, operation) {
+                return kendo.stringify(options);
+            }
+        },
+        schema: {
+            model: {
+                id: "surgeryRoomAppointmentId",
+                fields: {
+                    surgeryRoomAppointmentId: { from: "surgeryRoomAppointmentId" },
+                    title: { from: "title", defaultValue: "", validation: { required: true } },
+                    start: { type: "date", from: "startDate" },
+                    end: { type: "date", from: "endDate" },
+                    doctorId: { from: "doctorId", nullable: true },
+                    roomId: { from: "roomId", nullable: true },
+                    //isConflict: { type: "boolean", from: "isPotentiallyConflicting" },
+                }
+            }
+        },
+        sync: function() {
+            this.read();
+        }
+    });
+
+    $(function () {
+
+        $("#scheduler").kendoScheduler({
+            startTime: new Date("2014/6/9 07:00"),
+            endTime: new Date("2014/6/9 18:00"),
+            height: 750,
+            views: [
+                { type: "day", selected: true, allDaySlot: false, minorTickCount: 4 },
+                { type: "workWeek", allDaySlot: false, minorTickCount: 4 },
+                "agenda"
+            ],
+            workWeekEnd: 6,
+            timezone: "Etc/GMT-1",
+            dataSource: surgeryRoomAppointmentsDataSource,
+            footer: false,
+            group: {
+                resources: ["Rooms"]
+            },
+            messages: {
+                editor: {
+                    editorTitle: "Surgery Room Appointment"
+                }
+            },
+            resources: [
+                {
+                    field: "roomId",
+                    dataTextField: "name",
+                    dataValueField: "roomId",
+                    dataSource: roomDataSource,
+                    name: "Rooms",
+                    title: "Room"
+                }
+            ]
+        });
+
+    });
+</script>

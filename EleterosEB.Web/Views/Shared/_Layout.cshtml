@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+
+    <link href="~/css/site.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2020.2.617/styles/kendo.common.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2020.2.617/styles/kendo.default.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2020.2.617/styles/kendo.silver.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2020.2.617/styles/kendo.silver.mobile.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2020.2.617/styles/kendo.dataviz.min.css" rel="stylesheet" />
+    <link href="http://cdn.kendostatic.com/2020.2.617/styles/kendo.dataviz.silver.min.css" rel="stylesheet" />
+    <link href="https://kendo.cdn.telerik.com/2020.2.617/styles/kendo.default-v2.min.css" rel="stylesheet" />
+
+    <script src="https://kendo.cdn.telerik.com/2020.2.617/js/jquery.min.js"></script>
+    <script src="https://kendo.cdn.telerik.com/2020.2.617/js/kendo.all.min.js"></script>    
+    <script src="https://kendo.cdn.telerik.com/2020.2.617/js/kendo.timezones.min.js"></script>
+
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <header>
+        <div class="client-picker-header">
+            <script id="clientpatientpickertemplate" type="text/x-kendo-template">
+        <div>
+            <h3>${data.fullName}</h3>
+            #= renderPatientTemplate(data) #
+        </div>
+    </script>
+            <script id="patient-template" type="text/x-kendo-template">
+    </script>
+
+            <div id="window">
+                <div class="k-content">
+                    <div class="editor-label">
+                        @Html.Label("Client")
+                    </div>
+                    <div class="editor-field">
+                        <input type="text" id="client" style="width: 400px;" />
+                        <p>Start typing to find a client</p>
+                    </div>
+                </div>
+                <div id="patientSelection">
+                    <div class="editor-label">
+                        @Html.Label("Patient")
+                    </div>
+                    <div class="editor-field">
+                        <select id="patientDropDown" data-role="dropdownlist" name="patientDropDown"
+                                data-value-field="patientId"
+                                data-text-field="name"
+                                data-bind="source: selectedClient.patients, events:{dataBound:onPatientDataBound}"></select>
+                    </div>
+                </div>
+                <input type="button" value="Select" id="selectPatientButton" />
+            </div>
+
+            <div class="content-wrapper">
+                <div class="client-picker">
+                    <span class="label">Client:</span> <span data-bind="text: selectedClient.fullName"></span><br />
+                    <span class="label">Patient:</span> <span data-bind="text: selectedPatient.name"></span><br />
+                </div>
+            </div>
+
+        </div>
+
+        <div class="content-wrapper">
+            @*<div class="client-picker">
+                <span class="label">Client:</span> <span data-bind="text: selectedClient.fullName"></span><br />
+                <span class="label">Patient:</span> <span data-bind="text: selectedPatient.name"></span><br />
+            </div>*@
+            <div class="site-title">
+                <a href="~/">ÉleterősEB Manager</a>
+            </div>
+            <div class="menu">
+                <nav>
+                    <ul id="menu">
+                        <li>@Html.ActionLink("Schedule", "Index", "App", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Clients", "Clients", "App", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Patients", "Patients", "App", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Doctors", "Doctors", "App", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Rooms", "Rooms", "App", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("AppointmentTypes", "AppointmentTypes", "App", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Product Categories", "Categories", "App", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("Products", "Products", "App", new { area = "" }, null)</li>
+                        <li>@Html.ActionLink("SurgeryRoomAppointment", "SurgeryRoomAppointment", "App", new { area = "" }, null)</li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+    </header>
+
+    @RenderBody()
+    <script src="~/js/header.js"></script>
+  </body>
+</html>

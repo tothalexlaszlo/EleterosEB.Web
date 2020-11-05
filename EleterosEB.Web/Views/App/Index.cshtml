@@ -1,0 +1,246 @@
+﻿<div id="body">
+    <h2>Appointments</h2>
+    <div id="scheduler"></div>
+    <div id="console" class="console"></div>
+    <span id="notification"></span>
+</div>
+
+<style>
+    .conflicted-event {
+        border: 2px solid red !important;
+        font-weight: bold;
+    }
+
+</style>
+
+
+<script>
+
+    var appointmentTypesDataSource = new kendo.data.DataSource({
+        type: "json",
+        transport: {
+            read: {
+                url: "/api/appointmenttypes",
+                contentType: "application/json"
+            }
+        }
+    });
+
+    var dcotorsServiceUrl = "/api/doctors";
+    var doctorsDataSource = new kendo.data.DataSource({
+        type: "json",
+        transport: {
+            read: {
+                url: dcotorsServiceUrl,
+                contentType: "application/json"
+            }
+        },
+        schema: {
+            model: {
+                id: "doctorId",
+                fields: {
+                    doctorId: { type: "number", editable: false },
+                    name: {}
+                }
+            }
+        }
+    });
+
+    var appointmentsServiceUrl = "/api/appointments";
+    var viewModel = new kendo.observable({
+        appointmentTypes: null,
+        selectedAppointmentType: { name: "NotSet", duration: 60, appointmentTypeId: 0 },
+        selectedAppointment: null,
+        schedulerData: new kendo.data.SchedulerDataSource({
+            type: "json",
+            transport: {
+                read: {
+                    url: appointmentsServiceUrl,
+                    contentType: "application/json"
+                },
+                update: {
+                    url: function (appt) { return appointmentsServiceUrl + "/" + appt.appointmentId },
+                    type: "PUT",
+                    contentType: "application/json"
+                },
+                create: {
+                    url: appointmentsServiceUrl,
+                    type: "POST",
+                    contentType: "application/json"
+                },
+                destroy: {
+                    url: function (appt) { return appointmentsServiceUrl + "/" + appt.appointmentId },
+                    type: "DELETE",
+                    contentType: "application/json"
+                },
+                parameterMap: function (options, operation) {
+                    return kendo.stringify(options);
+                }
+            },
+            schema: {
+                model: {
+                    id: "appointmentId",
+                    fields: {
+                        appointmentId: { from: "appointmentId" },
+                        title: { from: "title", defaultValue: "", validation: { required: true } },
+                        start: { type: "date", from: "startDate" },
+                        end: { type: "date", from: "endDate" },
+                        doctorId: { from: "doctorId", nullable: true },
+                        clientId: { from: "clientId" },
+                        patientId: { from: "patientId" },
+                        patientName: { from: "PatientName" },
+                        appointmentTypeId: { from: "appointmentTypeId" },
+                        appointmentType: { from: "appointmentType" },
+                        //isConflict: { type: "boolean", from: "isPotentiallyConflicting" },
+                    }
+                }
+            },
+            sync: function () {
+                this.read();
+            }
+        })
+    });
+
+    var updateSelectedAppointmentType = function (item) {
+        viewModel.set("selectedAppointmentType", item);
+    }
+    var updateSelectedAppointment = function (appt) {
+        viewModel.set("selectedAppointment", appt);
+    }
+
+
+    $(function () {
+        var onAdd = function (e) {
+            console.log("onAdd");
+            e.event.appointmentType = viewModel.appointmentTypes[1];
+
+            if (!headerViewModel.selectedPatient) {
+                e.preventDefault();
+                $(".client-picker").css("border", "3px solid red");
+            }
+            e.event.clientId = headerViewModel.selectedClient.clientId;
+            e.event.patientId = headerViewModel.selectedPatient.patientId;
+        }
+        var onDataBound = function (e) {
+            $("[data-is-conflicted=true]")
+                .parent()
+                .addClass("conflicted-event");
+        }
+        var onEdit = function (e) {
+            console.log("onEdit: " + kendo.stringify(e.event));
+        }
+        var onSave = function (e) {
+            console.log("onSave");
+            // adjust time based on appointment type
+            if (!e.event.appointmentId) {
+                // new appointment
+
+                e.event.end = new Date(e.event.start.getTime() +
+                    (e.event.appointmentType.duration * 60 * 1000));
+                //e.event.start = e.event.start.toISOString();
+                e.event.title = e.event.appointmentType.code + ' ' + 
+                    headerViewModel.selectedPatient.name  + ' ' + 
+                    headerViewModel.selectedClient.fullName;
+                e.event.appointmentTypeId = e.event.appointmentType.appointmentTypeId;
+
+                console.log(e.event.start);
+                console.log(e.event.end);
+                //console.log(e.event.title);
+                console.log('title:' + e.event.title + ' start:' + e.event.start + ' end:' + e.event.end + ' doctor:' + e.event.doctorId + ' client:' + e.event.clientId + ' patient:' + e.event.patientId + ' appttype:' + e.event.appointmentType  );
+
+            }
+        };
+
+        var template = kendo.template($("#scheduler-editor").html());
+
+        $("#scheduler").kendoScheduler({
+            startTime: new Date("2014/6/9 07:00"),
+            endTime: new Date("2014/6/9 18:00"),
+            height: 750,
+            views: [
+                { type: "day", selected: true, allDaySlot: false, minorTickCount: 4 },
+                { type: "workWeek", allDaySlot: false, minorTickCount: 4 },
+                "agenda"
+            ],
+            workWeekEnd: 6,
+            timezone: "Etc/GMT-1",
+            dataSource: viewModel.schedulerData,
+            add: onAdd,
+            //dataBound: onDataBound,
+            edit: onEdit,
+            save: onSave,
+            editable: {
+                template: template
+            },
+            eventTemplate: kendo.template($("#event-template").html()),
+            footer: false,
+            group: {
+                resources: ["Doctors"]
+            },
+            messages: {
+                editor: {
+                    editorTitle: "Appointment"
+                }
+            },
+            resources: [
+                {
+                    field: "doctorId",
+                    dataTextField: "name",
+                    dataValueField: "doctorId",
+                    dataSource: doctorsDataSource,
+                    name: "Doctors",
+                    title: "Doctor"
+                }
+            ]
+        });
+
+        // preload appointment types
+        $.get("/api/AppointmentTypes", function (data) {
+            viewModel.set("appointmentTypes", data);
+        });
+
+        //var notification = $("#notification").kendoNotification().data("kendoNotification");
+
+        //var scheduleHub = $.connection.scheduleHub;
+        //$.extend(scheduleHub.client, {
+        //    showAlert: function (message) {
+        //        notification.show(message);
+        //        setTimeout(function () {
+        //            $("#scheduler").data("kendoScheduler").dataSource.read();
+        //        }, 500); // delay to allow time for persistence to occur
+        //    }
+        //});
+        //$.connection.hub.start();
+    });
+</script>
+
+    <script id="event-template" type="text/x-kendo-template">
+        <div>#: title #</div>
+    </script>
+
+<script id="scheduler-editor" type="text/x-kendo-template">
+        # if(appointmentId) { #
+        <h3>Edit Appointment</h3>
+        # } else { #
+        <h3>Add Appointment</h3>
+        # } #
+
+        <p>
+            <label>Appointment Type: </label>
+            <input id="appointmentTypeDropDownList"
+                   data-text-field="name"
+                   data-value-field="appointmentTypeId"
+                   data-role="dropdownlist"
+                   data-bind="source:appointmentTypes,value:appointmentType" />
+        </p>
+        <p>
+            <label>Duration:</label>
+            <span data-bind="text:appointmentType.duration"></span> minutes
+        </p>
+        <p>
+            <label>Patient</label>
+            <span data-bind="text:patientName"></span>
+
+        </p>
+        
+</script>

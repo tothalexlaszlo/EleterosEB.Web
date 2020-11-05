@@ -1,0 +1,68 @@
+﻿@{
+}
+<h2>Doctors</h2>
+<div id="grid"></div>
+<script>
+        $(function () {
+            var serviceUrl = "/api/doctors";
+            var dataSource = new kendo.data.DataSource({
+                type: "json",
+                transport: {
+                    read: {
+                        url: serviceUrl,
+                        contentType: "application/json"
+                    },
+                    update: {
+                        url: function (doctor) { return serviceUrl + "/" + doctor.doctorId },
+                        type: "PUT",
+                        contentType: "application/json"
+                    },
+                    destroy: {
+                        url: function (doctor) { return serviceUrl + "/" + doctor.doctorId },
+                        type: "DELETE",
+                        contentType: "application/json"
+                    },
+                    create: {
+                        url: serviceUrl,
+                        type: "POST",
+                        contentType: "application/json"
+                    },
+                    parameterMap: function (options, operation) {
+                        return JSON.stringify(options);
+                    }
+                },
+                pageSize: 10,
+                schema: {
+                    model: {
+                        id: "doctorId",
+                        fields: {
+                            doctorId: { type: "number", editable: false },
+                            name: { editable: true }
+                        }
+                    }
+                }
+            });
+            $("#grid").kendoGrid({
+                dataSource: dataSource,
+                editable: "inline",
+                toolbar: ["create"],
+                columns: [
+                    //{
+                    //    field: "roomId",
+                    //    filterable: false,
+                    //    editable: false,
+                    //    width: 50,
+                    //},
+                    {
+                        field: "name",
+                        title: "Name",
+                        filterable: false
+                    },
+                    {
+                        command: ["edit", "destroy"], title: "&nbsp;", width: "210px"
+                    }
+                ],
+                pageable: true
+            });
+        });
+</script>

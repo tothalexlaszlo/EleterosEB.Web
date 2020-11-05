@@ -1,0 +1,181 @@
+﻿@{
+}
+<h2>Patients</h2>
+<div id="grid"></div>
+
+<script type="text/x-kendo-template" id="template">
+        <div class="detailTabstrip">
+            <ul>
+                <li class="k-state-active">
+                    Client Information
+                </li>
+            </ul>
+            <div>
+                <div class='client-details'>
+
+                </div>
+            </div>
+        </div>
+</script>
+
+<script>
+    var serviceUrl = "/api/patients";
+    var clients = [];
+    var genders = [
+        {
+            "genderId": 1,
+            "genderText": "female"
+        },
+        {
+            "genderId": 0,
+            "genderText": "male"
+        }
+    ];
+
+    $(document).ready(function () {
+
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 30,
+            type: "json",
+            transport: {
+                read: {
+                    url: serviceUrl,
+                    contentType: "application/json"
+                },
+                update: {
+                    url: function (patient) { return serviceUrl + "/" + patient.patientId },
+                    type: "PUT",
+                    contentType: "application/json"
+                },
+                destroy: {
+                    url: function (patient) { return serviceUrl + "/" + patient.patientId },
+                    type: "DELETE",
+                    contentType: "application/json"
+                },
+                create: {
+                    url: serviceUrl,
+                    type: "POST",
+                    contentType: "application/json"
+                },
+                parameterMap: function (options, operation) {
+                    return JSON.stringify(options);
+                }
+            },
+            //autoSync: true,
+            schema: {
+                model: {
+                    id: "patientId",
+                    fields: {
+                        patientId: { type: "number", editable: false },
+                        name: { validation: { required: true } },
+                        clientId: { editable: true },
+                        gender: { editable: true },
+                        animalTypeSpecies: { editable: true },
+                        animalTypeBreed: { editable: true }
+                    }
+                }
+            }
+        });
+
+        $("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            scrollable: false,
+            //autoBind: false,
+            detailTemplate: kendo.template($("#template").html()),
+            detailInit: detailInit,
+            toolbar: ["create"],
+            columns: [
+                { field: "name", title: "Name" },
+                {
+                    field: "clientId", width: "150px",
+                    editor: clientDropDownEditor,
+                    title: "Client",
+                    template: "#=getClientName(clientId)#"
+                },
+                {
+                    field: "gender", width: "150px",
+                    editor: genderDropDownEditor,
+                    title: "Gender",
+                    template: "#=getGenderText(gender)#"
+                },
+                { field: "animalTypeSpecies", title: "animalTypeSpecies" },
+                { field: "animalTypeBreed", title: "animalTypeBreed" },
+                {
+                    command: ["edit", "destroy"], title: "&nbsp;", width: "210px"
+                }
+            ],
+            editable: "inline"
+        });
+
+        $.getJSON("http://localhost:8888/api/clients", function (data) {
+            clients = data;
+            dataSource.fetch();
+        });
+
+    });
+
+    function genderDropDownEditor(container, options) {
+        $('<input data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                dataTextField: "genderText",
+                dataValueField: "genderId",
+                dataSource: genders,
+                //filter: "contains"
+            });
+    }
+
+    function getGenderText(gender) {
+        for (var idx = 0, length = genders.length; idx < length; idx++) {
+            if (genders[idx].genderId === gender) {
+                return genders[idx].genderText;
+            }
+        }
+    }
+
+    function clientDropDownEditor(container, options) {
+        $('<input data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                dataTextField: "fullName",
+                dataValueField: "clientId",
+                dataSource: clients,
+                filter: "contains"
+            });
+    }
+
+    function getClientName(clientId) {
+        for (var idx = 0, length = clients.length; idx < length; idx++) {
+            if (clients[idx].clientId === clientId) {
+                return clients[idx].fullName;
+            }
+        }
+    }
+
+    function detailInit(e) {
+        var detailRow = e.detailRow;
+
+        detailRow.find(".detailTabstrip").kendoTabStrip({
+            animation: {
+                open: { effects: "fadeIn" }
+            }
+        });
+
+        detailRow.find(".client-details").kendoGrid({
+            dataSource: {
+                type: "json",
+                transport: {
+                    read: "http://localhost:8888/api/clients"
+                },
+                filter: { field: "clientId", operator: "eq", value: e.data.clientId }
+            },
+            columns: [
+                { field: "fullName", title:"Name" },
+                { field: "phoneNumber", title:"Phone Number" },
+                { field: "emailAddress", title:"Email Address" },
+            ]
+        });
+    }
+
+</script>

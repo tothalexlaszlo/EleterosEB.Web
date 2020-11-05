@@ -1,0 +1,139 @@
+﻿@{
+}
+<h2>Products</h2>
+<div id="grid"></div>
+
+<script>
+    var serviceUrl = "/api/products";
+    var categories = [];
+
+    $(document).ready(function () {
+
+        var dataSource = new kendo.data.DataSource({
+            pageSize: 15,
+            type: "json",
+            transport: {
+                read: {
+                    url: serviceUrl,
+                    contentType: "application/json"
+                },
+                update: {
+                    url: function(product) {
+                        console.log(product.productId + ' ' + product.productName + ' ' + product.categoryId + ' ' + product.quantityPerUnit + ' ' + product.unitPrice + ' ' + product.unitInStock);
+                        return serviceUrl + "/" + product.productId
+                    },
+                    type: "PUT",
+                    contentType: "application/json"
+                },
+                destroy: {
+                    url: function (product) { return serviceUrl + "/" + product.productId},
+                    type: "DELETE",
+                    contentType: "application/json"
+                },
+                create: {
+                    url: function(product) {
+                        console.log(product.productId + ' ' + product.productName + ' ' + product.categoryId + ' ' + product.quantityPerUnit + ' ' + product.unitPrice + ' ' + product.unitInStock);
+                        return serviceUrl;
+                    },
+                    type: "POST",
+                    contentType: "application/json"
+                },
+                parameterMap: function (options, operation) {
+                    return JSON.stringify(options);
+                }
+            },
+            schema: {
+                model: {
+                    id: "productId",
+                    fields: {
+                        productId: { type: "number", editable: false },
+                        productName: { validation: { required: true } },
+                        categoryId: { type: "number" },
+                        quantityPerUnit: {  },
+                        unitPrice: { type: "number" },
+                        unitInStock: { type: "number" }
+                    }
+                }
+            }
+        });
+
+        //$("#grid").kendoGrid({
+        //    dataSource: dataSource,
+        //    editable: "inline",
+        //    toolbar: ["create"],
+        //    columns: [
+        //        {
+        //            field: "productName",
+        //            title: "Product Name",
+        //            filterable: false
+        //        },
+        //        {
+        //            field: "categoryId", width: "150px",
+        //            editor: categoryDropDownEditor,
+        //            title: "Category",
+        //            template: "#=getCategoryName(categoryId)#"
+        //        },
+        //        { field: "quantityPerUnit", title: "Quantity Per Unit" },
+        //        { field: "unitPrice", title: "Unit Price" },
+        //        { field: "unitInStock", title: "Unit In Stock" },
+        //        {
+        //            command: ["edit", "destroy"], title: "&nbsp;", width: "210px"
+        //        }
+        //    ],
+        //    pageable: true
+        //});
+
+        $("#grid").kendoGrid({
+            dataSource: dataSource,
+            filterable: true,
+            scrollable: false,
+            toolbar: ["create"],
+            columns: [
+                {
+                    field: "productName",
+                    title: "Product Name",
+                    filterable: false
+                },
+                {
+                    field: "categoryId", width: "150px",
+                    editor: categoryDropDownEditor,
+                    title: "Category",
+                    template: "#=getCategoryName(categoryId)#"
+                },
+                { field: "quantityPerUnit", title: "Quantity Per Unit" },
+                { field: "unitPrice", title: "Unit Price" },
+                { field: "unitInStock", title: "Unit In Stock" },
+                {
+                    command: ["edit", "destroy"], title: "&nbsp;", width: "210px"
+                }
+            ],
+            editable: "inline"
+        });
+
+        $.getJSON("http://localhost:8888/api/categories", function (data) {
+            categories = data;
+            dataSource.fetch();
+        });
+
+    });
+
+    function categoryDropDownEditor(container, options) {
+        $('<input data-bind="value:' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                dataTextField: "categoryName",
+                dataValueField: "categoryId",
+                dataSource: categories,
+                filter: "contains"
+            });
+    }
+
+    function getCategoryName(categoryId) {
+        for (var idx = 0, length = categories.length; idx < length; idx++) {
+            if (categories[idx].categoryId === categoryId) {
+                return categories[idx].categoryName;
+            }
+        }
+    }
+</script>
+
