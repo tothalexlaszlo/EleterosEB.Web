@@ -16,6 +16,5 @@ namespace EleterosEB.Domain
         public string AnimalTypeBreed { get; set; }
 
         public virtual Client Client { get; set; }
-
     }
 }

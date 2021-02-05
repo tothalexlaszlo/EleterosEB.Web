@@ -49,8 +49,8 @@
                         productId: { type: "number", editable: false },
                         productName: { validation: { required: true } },
                         categoryId: { type: "number" },
-                        quantityPerUnit: {  },
-                        unitPrice: { type: "number" },
+                        quantityPerUnit: { validation: { required: true } },
+                        unitPrice: { type: "number", validation: { required: true } },
                         unitInStock: { type: "number" }
                     }
                 }

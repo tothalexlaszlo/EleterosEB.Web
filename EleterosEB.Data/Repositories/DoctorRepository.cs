@@ -13,8 +13,8 @@ namespace EleterosEB.Data.Repositories
 {
     public class DoctorRepository : BaseGenericRepository<Doctor>, IDoctorRepository
     {
-        public DoctorRepository(EleterosEBContext context, ILogger<BaseGenericRepository<Doctor>> logger)
-            : base(context, logger)
+        public DoctorRepository(EleterosEBContext context)
+            : base(context)
         {
         }
     }

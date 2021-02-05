@@ -1,5 +1,5 @@
 ﻿<div id="body">
-    <h2>Appointments</h2>
+    <h2>Surgery Room Appointments</h2>
     <div id="scheduler"></div>
 </div>
 
@@ -18,6 +18,27 @@
                 id: "roomId",
                 fields: {
                     roomId: { type: "number", editable: false },
+                    name: {}
+                }
+            }
+        }
+    });
+
+
+    var doctorsServiceUrl = "/api/doctors";
+    var doctorsDataSource = new kendo.data.DataSource({
+        type: "json",
+        transport: {
+            read: {
+                url: doctorsServiceUrl,
+                contentType: "application/json"
+            }
+        },
+        schema: {
+            model: {
+                id: "doctorId",
+                fields: {
+                    doctorId: { type: "number", editable: false },
                     name: {}
                 }
             }
@@ -59,8 +80,8 @@
                     title: { from: "title", defaultValue: "", validation: { required: true } },
                     start: { type: "date", from: "startDate" },
                     end: { type: "date", from: "endDate" },
-                    doctorId: { from: "doctorId", nullable: true },
-                    roomId: { from: "roomId", nullable: true },
+                    doctorId: { from: "doctorId" },
+                    roomId: { from: "roomId" },
                     //isConflict: { type: "boolean", from: "isPotentiallyConflicting" },
                 }
             }
@@ -70,7 +91,7 @@
         }
     });
 
-    $(function () {
+    $(function() {
 
         $("#scheduler").kendoScheduler({
             startTime: new Date("2014/6/9 07:00"),
@@ -93,6 +114,9 @@
                     editorTitle: "Surgery Room Appointment"
                 }
             },
+            editable: {
+                template: $("#editor").html()
+            },
             resources: [
                 {
                     field: "roomId",
@@ -101,9 +125,58 @@
                     dataSource: roomDataSource,
                     name: "Rooms",
                     title: "Room"
+                },
+                {
+                    field: "doctorId",
+                    dataTextField: "name",
+                    dataValueField: "doctorId",
+                    dataSource: doctorsDataSource,
+                    name: "Doctors",
+                    title: "Doctor",
                 }
             ]
         });
 
     });
+
+    function getDoctorResourceData(e) {
+        getData(e, 1);
+    }
+
+    function getData(e, index) {
+        var scheduler = $("#scheduler").data('kendoScheduler');
+        var resourcesData = scheduler.resources[index].dataSource.view();
+        e.success(resourcesData.toJSON());
+    }
+
 </script>
+
+<script id="editor" type="text/x-kendo-template">
+    # if(surgeryRoomAppointmentId) { #
+    <h3>Edit Surgery Room Booking</h3>
+    # } else { #
+    <h3>Add Surgery Room Booking</h3>
+    # } #
+
+    <p>
+        <label>Title: <input name="title" /></label>
+    </p>
+    <p>
+        <label>Start: <input data-role="datetimepicker" name="start" /></label>
+    </p>
+    <p>
+        <label>End: <input data-role="datetimepicker" name="end" /></label>
+    </p>
+    
+    <p>
+        <label for="doctorId">
+            Doctor:
+            <input id="doctorId" data-bind="value:doctorId" data-role="dropdownlist" name="doctorId"
+                   data-value-field="doctorId" data-text-field="name"
+                   data-source="{
+                           transport: {
+                             read: getDoctorResourceData}}" />
+        </label>    
+    </p>
+</script>
+

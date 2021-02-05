@@ -11,7 +11,7 @@ namespace EleterosEB.Data.Repositories
 {
     public class ProductRepository: BaseGenericRepository<Product>, IProductRepository
     {
-        public ProductRepository(EleterosEBContext context, ILogger<BaseGenericRepository<Product>> logger) : base(context, logger)
+        public ProductRepository(EleterosEBContext context) : base(context)
         {
         }
     }

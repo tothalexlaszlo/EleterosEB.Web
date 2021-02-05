@@ -32,6 +32,9 @@ namespace EleterosEB.Bll
 
         public Task<bool> UpdateSurgeryRoomAppointment(SurgeryRoomAppointment surgeryRoomAppointment)
         {
+            surgeryRoomAppointment.StartDate = surgeryRoomAppointment.StartDate.AddHours(1);
+            surgeryRoomAppointment.EndDate = surgeryRoomAppointment.EndDate.AddHours(1);
+
             _unitOfWork.SurgeryRoomBooking.Update(surgeryRoomAppointment);
             return _unitOfWork.CommitAsync();
         }

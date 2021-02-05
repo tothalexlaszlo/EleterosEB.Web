@@ -11,7 +11,7 @@ namespace EleterosEB.Data.Repositories
 {
     public class CategoryRepository: BaseGenericRepository<Category>, ICategoryRepository
     {
-        public CategoryRepository(EleterosEBContext context, ILogger<BaseGenericRepository<Category>> logger) : base(context, logger)
+        public CategoryRepository(EleterosEBContext context) : base(context)
         {
         }
     }

@@ -91,7 +91,7 @@
                         patientName: { from: "PatientName" },
                         appointmentTypeId: { from: "appointmentTypeId" },
                         appointmentType: { from: "appointmentType" },
-                        //isConflict: { type: "boolean", from: "isPotentiallyConflicting" },
+                        isConflict: { type: "boolean", from: "isPotentiallyConflicting" },
                     }
                 }
             },
@@ -137,17 +137,10 @@
 
                 e.event.end = new Date(e.event.start.getTime() +
                     (e.event.appointmentType.duration * 60 * 1000));
-                //e.event.start = e.event.start.toISOString();
                 e.event.title = e.event.appointmentType.code + ' ' + 
                     headerViewModel.selectedPatient.name  + ' ' + 
                     headerViewModel.selectedClient.fullName;
                 e.event.appointmentTypeId = e.event.appointmentType.appointmentTypeId;
-
-                console.log(e.event.start);
-                console.log(e.event.end);
-                //console.log(e.event.title);
-                console.log('title:' + e.event.title + ' start:' + e.event.start + ' end:' + e.event.end + ' doctor:' + e.event.doctorId + ' client:' + e.event.clientId + ' patient:' + e.event.patientId + ' appttype:' + e.event.appointmentType  );
-
             }
         };
 
@@ -199,18 +192,6 @@
             viewModel.set("appointmentTypes", data);
         });
 
-        //var notification = $("#notification").kendoNotification().data("kendoNotification");
-
-        //var scheduleHub = $.connection.scheduleHub;
-        //$.extend(scheduleHub.client, {
-        //    showAlert: function (message) {
-        //        notification.show(message);
-        //        setTimeout(function () {
-        //            $("#scheduler").data("kendoScheduler").dataSource.read();
-        //        }, 500); // delay to allow time for persistence to occur
-        //    }
-        //});
-        //$.connection.hub.start();
     });
 </script>
 

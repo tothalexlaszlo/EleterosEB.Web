@@ -14,12 +14,10 @@ namespace EleterosEB.Data.Repositories
         : IRepository<T> where T : class
     {
         private readonly EleterosEBContext _context;
-        private readonly ILogger<BaseGenericRepository<T>> _logger;
 
-        protected BaseGenericRepository(EleterosEBContext context, ILogger<BaseGenericRepository<T>> logger)
+        protected BaseGenericRepository(EleterosEBContext context)
         {
             _context = context;
-            _logger = logger;
         }
 
         public virtual void Add(T entity)

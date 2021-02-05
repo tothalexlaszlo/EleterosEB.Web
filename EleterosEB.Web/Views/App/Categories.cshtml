@@ -5,7 +5,7 @@
 <script>
     $(function () {
         var serviceUrl = "/api/categories";
-        var dataSource = new kendo.data.DataSource({
+        const dataSource = new kendo.data.DataSource({
             //type: "json",
             transport: {
                 read: {
@@ -37,7 +37,7 @@
                     id: "categoryId",
                     fields: {
                         categoryId: { type: "number", editable: false },
-                        categoryName: { editable: true },
+                        categoryName: { editable: true, validation: { required: true } },
                         description: { editable: true },
                     }
                 }
@@ -50,12 +50,6 @@
             editable: "inline",
             toolbar: ["create"],
             columns: [
-                //{
-                //    field: "roomId",
-                //    filterable: false,
-                //    editable: false,
-                //    width: 50,
-                //},
                 {
                     field: "categoryName",
                     title: "Name",
@@ -72,21 +66,6 @@
             ],
             pageable: true
         });
-
-
     });
-    //var clientDropDownEditor = $("#products").kendoDropDownList({
-    //    dataTextField: "fullName",
-    //    dataValueField: "clientId",
-    //    dataSource: {
-    //        transport: {
-    //            read: {
-    //                dataType: "json",
-    //                url: "http://localhost:8888/api/clients",
-    //            }
-    //        }
-    //    },
-    //    filter: "contains"
-    //});
 </script>
 

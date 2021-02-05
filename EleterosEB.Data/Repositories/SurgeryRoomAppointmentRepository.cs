@@ -11,7 +11,7 @@ namespace EleterosEB.Data.Repositories
 {
     public class SurgeryRoomAppointmentRepository: BaseGenericRepository<SurgeryRoomAppointment>, ISurgeryRoomAppointmentRepository
     {
-        public SurgeryRoomAppointmentRepository(EleterosEBContext context, ILogger<BaseGenericRepository<SurgeryRoomAppointment>> logger) : base(context, logger)
+        public SurgeryRoomAppointmentRepository(EleterosEBContext context) : base(context)
         {
         }
     }

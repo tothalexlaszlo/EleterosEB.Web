@@ -118,14 +118,14 @@ namespace EleterosEB.Web.Controllers
                     return BadRequest("Model is not valid");
                 }
 
-                var oldDoctor = await _appointmentTypeService.GetAppointmentTypeByIdAsync(id);
-                if (oldDoctor == null) return NotFound($"Could not find appointment type with id of {id}");
+                var oldAppointmentType = await _appointmentTypeService.GetAppointmentTypeByIdAsync(id);
+                if (oldAppointmentType == null) return NotFound($"Could not find appointment type with id of {id}");
 
-                var updatedDoctor = _mapper.Map(model, oldDoctor);
+                var updatedAppointmentType = _mapper.Map(model, oldAppointmentType);
 
-                if (await _appointmentTypeService.UpdateAppointmentType(updatedDoctor))
+                if (await _appointmentTypeService.UpdateAppointmentType(updatedAppointmentType))
                 {
-                    return Ok(updatedDoctor);
+                    return Ok(updatedAppointmentType);
                 }
 
             }

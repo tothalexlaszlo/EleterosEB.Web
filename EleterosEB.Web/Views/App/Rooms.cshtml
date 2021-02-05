@@ -31,14 +31,13 @@
                     return JSON.stringify(options);
                 }
             },
-            pageSize: 10,
+            pageSize: 15,
             schema: {
                 model: {
                     id: "roomId",
                     fields: {
                         roomId: { type: "number", editable: false },
-                        client: {  },
-                        name: { editable: true }
+                        name: { editable: true, validation: { required: true } }
                     }
                 }
             }

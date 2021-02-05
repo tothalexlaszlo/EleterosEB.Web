@@ -36,6 +36,10 @@ namespace EleterosEB.Web
 
             CreateMap<Category, CategoryDto>()
                 .ReverseMap();
+
+
+            CreateMap<SurgeryRoomAppointment, SurgeryRoomAppointmentDto>()
+                .ReverseMap();
         }
     }
 }

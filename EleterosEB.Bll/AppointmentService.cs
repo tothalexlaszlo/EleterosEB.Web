@@ -1,10 +1,9 @@
-﻿using System;
+﻿using EleterosEB.Data;
+using EleterosEB.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using EleterosEB.Data;
-using EleterosEB.Domain;
 
 namespace EleterosEB.Bll
 {
@@ -17,10 +16,22 @@ namespace EleterosEB.Bll
             _unitOfWork = unitOfWork;
         }
 
-        public Task<bool> CreateAppointment(Appointment newAppointment)
+        public async Task<bool> CreateAppointment(Appointment newAppointment)
         {
+            var appointmentsWithSpecificStartingDay = await GetAllAppointmentWithSpecificStartingDay(newAppointment.StartDate);
+            newAppointment.IsPotentiallyConflicting = false;
+
+            foreach (var appointment in appointmentsWithSpecificStartingDay)
+            {
+                if (DateIsConflicting(newAppointment.StartDate, appointment))
+                {
+                    newAppointment.IsPotentiallyConflicting = true;
+                }
+            }
+
+
             _unitOfWork.AppointmentRepository.Add(newAppointment);
-            return _unitOfWork.CommitAsync();
+            return await _unitOfWork.CommitAsync();
 
         }
 
@@ -47,6 +58,17 @@ namespace EleterosEB.Bll
         public Task<Appointment> GetAppointmentByIdAsync(int id)
         {
             return _unitOfWork.AppointmentRepository.GetByIdAsync(id);
+        }
+
+        private bool DateIsConflicting(DateTime targetDateTime, Appointment appointment)
+        {
+            return targetDateTime.Ticks > appointment.EndDate.Ticks && targetDateTime.Ticks < appointment.StartDate.Ticks;
+        }
+
+        private async Task<IEnumerable<Appointment>> GetAllAppointmentWithSpecificStartingDay(DateTime startDateTime)
+        {
+            var appointments = await _unitOfWork.AppointmentRepository.ListAsync();
+            return appointments.Where(appt => appt.StartDate.Day == startDateTime.Day);
         }
     }
 }

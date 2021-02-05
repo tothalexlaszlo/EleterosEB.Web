@@ -97,7 +97,7 @@ h5, h6 {
 .content-wrapper {
     /* margin: 0 auto; */
     max-width: 960px;
-    display: flex;
+    display: inline;
 }
 
 #body {
@@ -129,8 +129,8 @@ footer {
 }
 
 .menu {
-    float: right;
-    width: 400px;
+/*    float: right;
+    width: 400px;*/
 }
 
 

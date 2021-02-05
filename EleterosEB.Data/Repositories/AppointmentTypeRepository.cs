@@ -13,8 +13,8 @@ namespace EleterosEB.Data.Repositories
 {
     public class AppointmentTypeRepository: BaseGenericRepository<AppointmentType>, IAppointmentTypeRepository
     {
-        public AppointmentTypeRepository(EleterosEBContext context, ILogger<BaseGenericRepository<AppointmentType>> logger)
-            : base(context, logger)
+        public AppointmentTypeRepository(EleterosEBContext context)
+            : base(context)
         {
         }
     }

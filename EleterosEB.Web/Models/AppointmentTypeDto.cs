@@ -10,7 +10,7 @@ namespace EleterosEB.Web.Models
 {
     public class AppointmentTypeDto
     {
-        public int AppointmentTypeId { get; set; }
+        public int? AppointmentTypeId { get; set; }
         [Required]
         public string Name { get; set; }
         public string Code { get; set; }

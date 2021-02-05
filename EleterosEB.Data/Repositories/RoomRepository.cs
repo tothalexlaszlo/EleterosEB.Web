@@ -13,8 +13,8 @@ namespace EleterosEB.Data.Repositories
 {
     public class RoomRepository: BaseGenericRepository<Room>, IRoomRepository
     {
-        public RoomRepository(EleterosEBContext context, ILogger<BaseGenericRepository<Room>> logger)
-            : base(context, logger)
+        public RoomRepository(EleterosEBContext context)
+            : base(context)
         {
         }
 

@@ -31,13 +31,13 @@
                         return JSON.stringify(options);
                     }
                 },
-                pageSize: 10,
+                pageSize: 15,
                 schema: {
                     model: {
                         id: "doctorId",
                         fields: {
                             doctorId: { type: "number", editable: false },
-                            name: { editable: true }
+                            name: { editable: true, validation: { required: true } }
                         }
                     }
                 }

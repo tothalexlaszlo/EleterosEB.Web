@@ -37,9 +37,9 @@
                     id: "appointmentTypeId",
                     fields: {
                         appointmentTypeId: { type: "number", editable: false },
-                        name: { editable: true },
-                        code: { editable: true },
-                        duration: { type: "number", editable: true }
+                        name: { editable: true, validation: { required: true } },
+                        code: { editable: true, validation: { required: true } },
+                        duration: { type: "number", editable: true, validation: { required: true } }
                     }
                 }
             }
